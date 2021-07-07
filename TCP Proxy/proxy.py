@@ -49,7 +49,7 @@ def hexdump(src: str or bytes, length=16, show=True) -> None or str:
 def receive_from(connection: socket.socket) -> bytes:
     """Receive data from the specified socket."""
     buffer = b""
-    connection.timeout(5)
+    connection.settimeout(5)
     try:
         while True:
             data = connection.recv(4096)
@@ -57,7 +57,7 @@ def receive_from(connection: socket.socket) -> bytes:
                 break
             buffer += data
     except Exception as e:
-        print(f"Exception on receiving data: {e}.")
+        pass
     return buffer
 
 
@@ -71,7 +71,7 @@ def response_handler(buffer: bytes):
     return buffer
 
 
-def proxy_hander(
+def proxy_handler(
     client_socket: socket.socket,
     remote_host: str,
     remote_port: int,
@@ -162,7 +162,7 @@ def server_loop(
         print(f"> Received incoming connection from {addr[0]}:{addr[1]}")
         # start a thread to talk to the remote host
         proxy_thread = threading.Thread(
-            target=proxy_hander,
+            target=proxy_handler,
             args=(client_socket, remote_host, remote_port, receive_first),
         )
         proxy_thread.start()
