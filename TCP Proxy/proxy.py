@@ -57,7 +57,7 @@ def receive_from(connection: socket.socket) -> bytes:
                 break
             buffer += data
     except Exception as e:
-        pass
+        print(f"Exception on receiving data: {e}.")
     return buffer
 
 
