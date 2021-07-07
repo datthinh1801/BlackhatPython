@@ -1,7 +1,6 @@
 import sys
 import socket
 import threading
-import string
 
 # filter printable character from bytes
 # if a character is imprintable, represent it as a dot (.)
@@ -49,6 +48,9 @@ def hexdump(src: str or bytes, length=16, show=True) -> None or str:
 def receive_from(connection: socket.socket) -> bytes:
     """Receive data from the specified socket."""
     buffer = b""
+
+    # adjust this timeout
+    # timeout also counts during I/O
     connection.settimeout(5)
     try:
         while True:
@@ -88,25 +90,28 @@ def proxy_handler(
     remote_socket.connect((remote_host, remote_port))
 
     remote_buffer = b""
-    # check if we have to receive data from remote host first
-    # e.g. FTP servers send a banner to clients first
+
+    # receive data from the remote host first, if necessary
     if receive_first:
         remote_buffer = receive_from(remote_socket)
         hexdump(remote_buffer)
+        remote_buffer = response_handler(remote_buffer)
 
-    remote_buffer = response_handler(remote_buffer)
+    # if there is data to send to the localhost, send it
     if len(remote_buffer):
         print(f"[<==] Sending {len(remote_buffer)} bytes to localhost.")
         client_socket.send(remote_buffer)
 
+    # a loop to maintain connection between the localhost and the remote host
     while True:
         # receive data from the local host
         local_buffer = receive_from(client_socket)
         if len(local_buffer):
             print(f"[==>] Received {len(remote_buffer)} bytes from localhost.")
             hexdump(local_buffer)
-
             local_buffer = request_handler(local_buffer)
+
+            # forward the data to the remote host
             remote_socket.send(local_buffer)
             print("[==>] Sent to remote.")
 
@@ -115,11 +120,13 @@ def proxy_handler(
         if len(remote_buffer):
             print(f"[<==] Received {len(remote_buffer)} bytes from remote.")
             hexdump(remote_buffer)
-
             remote_buffer = response_handler(remote_buffer)
+
+            # forward the data to the localhost
             client_socket.send(remote_buffer)
             print(f"[<==] Sent to localhost.")
 
+        # if no more data from either side
         if not len(local_buffer) or not len(remote_buffer):
             client_socket.close()
             remote_socket.close()
@@ -156,10 +163,11 @@ def server_loop(
 
     print(f"[+] Listening on {(local_host, local_port)}")
     server.listen(5)
+
     while True:
         client_socket, addr = server.accept()
         # print out the local connection information
-        print(f"> Received incoming connection from {addr[0]}:{addr[1]}")
+        print(f"[==>] Received an incoming connection from {addr[0]}:{addr[1]}")
         # start a thread to talk to the remote host
         proxy_thread = threading.Thread(
             target=proxy_handler,
