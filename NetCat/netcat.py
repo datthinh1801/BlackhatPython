@@ -67,7 +67,8 @@ class NetCat:
         self.socket.bind((self.args.target, self.args.port))
         self.socket.listen(5)
         while True:
-            client_socket, _ = self.socket.accept()
+            client_socket, addr = self.socket.accept()
+            print(f"Accept a connection from {addr[0]}:{addr[1]}")
             client_thread = threading.Thread(target=self.handle, args=(client_socket,))
             client_thread.start()
 
