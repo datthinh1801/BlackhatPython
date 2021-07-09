@@ -59,7 +59,9 @@ def udp_sender():
     """Send the magic message to all hosts within the SUBNET."""
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sender:
         for ip in ipaddress.ip_network(SUBNET).hosts():
-            sender.sendto(bytes(MESSAGE, "utf8"), (str(ip), 9999))
+            # Send to port 9999 which is pretty sure closed.
+            # As a result, an ICMP packet with Type 3 - Code 3 will be returned.
+            sender.sendto(bytes(MESSAGE, "utf8"), (str(ip), 49151))
 
 
 class Scanner:
@@ -98,6 +100,8 @@ class Scanner:
                     icmp_header = ICMP(icmp_raw_header)
 
                     # check for DESTINATION PORT UNREACHABLE (TYPE 3 and CODE 3)
+                    # [NOTE] the destined host with the port closed MAY chooses not to reply
+                    # with an ICMP TYPE 3 - CODE 3 (as on Windows)
                     if icmp_header.type == 3 and icmp_header.code == 3:
                         if ipaddress.ip_address(
                             ip_header.src_ip
