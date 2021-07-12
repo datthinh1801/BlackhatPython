@@ -86,6 +86,8 @@ class ARP_Poisoner:
                 self.restore()
                 os.system("sudo echo 0 > /proc/sys/net/ipv4/ip_forward")
                 sys.exit(0)
+            # this else block is executed only when
+            # the try block succeeds
             else:
                 time.sleep(2)
 
