@@ -1,7 +1,8 @@
 import queue
-import requests
 import threading
 import sys
+import requests
+
 
 AGENT = "Mozilla"
 # possible extensions of configuration files
@@ -46,8 +47,8 @@ def get_words(resume=None) -> queue.Queue:
             words.put(f"/{word}{ext}")
 
     ### MAIN ROUTINE ###
-    with open(WORDLIST) as f:
-        raw_words = f.read()
+    with open(WORDLIST) as wordlist:
+        raw_words = wordlist.read()
 
     found_resume = False
     words = queue.Queue()
@@ -68,6 +69,9 @@ def get_words(resume=None) -> queue.Queue:
 
 
 def dir_bruter(words):
+    """
+    Brute force files and directories using words as wordlist.
+    """
     headers = {"User-Agent": AGENT}
     while not words.empty():
         url = f"{TARGET}{words.get()}"
