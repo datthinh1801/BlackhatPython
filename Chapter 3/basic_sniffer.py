@@ -3,6 +3,9 @@ import socket
 
 
 def sniff(host: str):
+    """
+    Sniff packets from the specified host.
+    """
     # Windows allows us to sniff all incoming packets regardless protocol
     if os.name == "nt":
         socket_protocol = socket.IPPROTO_IP
@@ -21,13 +24,13 @@ def sniff(host: str):
     # report sniffer info for testing
     print(sniffer)
     # sniff a packet
-    raw_packet = sniffer.recvfrom(65565)[0]
+    packet = sniffer.recvfrom(65565)[0]
 
     # if using Windows, turn off promiscuous mode
     if os.name == "nt":
         sniffer.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)
 
-    return raw_packet
+    return packet
 
 
 if __name__ == "__main__":

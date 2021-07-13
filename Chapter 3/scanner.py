@@ -96,7 +96,7 @@ class Scanner:
                     # icmp packet starts at the beginning of the data section of the ip packet
                     # [NOTE] IHL is the number of 32-bit words
                     offset = ip_header.ihl * 4
-                    icmp_raw_header = raw_packet[offset : offset + 8]
+                    icmp_raw_header = raw_packet[offset: offset + 8]
                     icmp_header = ICMP(icmp_raw_header)
 
                     # check for DESTINATION PORT UNREACHABLE (TYPE 3 and CODE 3)

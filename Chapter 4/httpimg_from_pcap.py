@@ -1,10 +1,10 @@
-from struct import pack
-from scapy.all import TCP, rdpcap
 import collections
 import os
 import re
 import sys
 import zlib
+
+from scapy.all import TCP, rdpcap
 
 OUTDIR = os.getcwd()
 PCAPS = os.getcwd()
@@ -37,7 +37,7 @@ def extract_content(response, content_name="image"):
     # if the content is an image
     if content_name in response.header["Content-Type"]:
         content_type = response.header["Content-Type"].split("/")[1]
-        content = response.payload[response.payload.index(b"\r\n\r\n") + 4 :]
+        content = response.payload[response.payload.index(b"\r\n\r\n") + 4:]
 
         # extract the image
         if "Content-Encoding" in response.header:

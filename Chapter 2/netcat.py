@@ -11,7 +11,7 @@ def execute(cmd):
     """Execute a specified command."""
     cmd = cmd.strip()
     if not cmd:
-        return
+        return None
     output = subprocess.check_output(
         shlex.split(cmd), stderr=subprocess.STDOUT, shell=True
     )
@@ -19,6 +19,10 @@ def execute(cmd):
 
 
 class NetCat:
+    """
+    A class to manage connection.
+    """
+
     def __init__(self, args):
         """Initialize a netcat-like object."""
         self.args = args
@@ -27,7 +31,10 @@ class NetCat:
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     def run(self):
-        """Start the netcat-like object in either listening mode or sending mode based on the 'listen' argument from the CLI."""
+        """
+        Start the netcat-like object in either listening mode
+        or sending mode based on the 'listen' argument from the CLI.
+        """
         if self.args.listen:
             self.listen()
         else:
@@ -73,7 +80,10 @@ class NetCat:
             client_thread.start()
 
     def handle(self, client_socket):
-        """[LISTENER] Handle the request from the sender, process the request, and return a result."""
+        """
+        [LISTENER] Handle the request from the sender,
+        process the request, and return a result.
+        """
         # -e, --execute
         # execute a command
         if self.args.execute:
@@ -94,8 +104,8 @@ class NetCat:
                     break
 
             # write the contents to a local file
-            with open(self.args.upload, "wb") as f:
-                f.write(file_buffer)
+            with open(self.args.upload, "wb") as file:
+                file.write(file_buffer)
 
             message = f"Saved file {self.args.upload}"
             client_socket.send(message.encode())

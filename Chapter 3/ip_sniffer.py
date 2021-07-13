@@ -86,7 +86,7 @@ def sniff(host):
                 # icmp packet starts at the beginning of the data section of the ip packet
                 # [NOTE] IHL is the number of 32-bit words
                 offset = ip_header.ihl * 4
-                icmp_raw_header = raw_packet[offset : offset + 8]
+                icmp_raw_header = raw_packet[offset: offset + 8]
                 icmp_header = ICMP(icmp_raw_header)
                 print(f"\tICMP -> Type: {icmp_header.type}\tCode: {icmp_header.code}")
     except KeyboardInterrupt:

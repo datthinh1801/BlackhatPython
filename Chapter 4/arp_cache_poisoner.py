@@ -1,9 +1,10 @@
-from multiprocessing import Process
-
-import scapy.all as sc
 import os
 import sys
 import time
+
+from multiprocessing import Process
+
+import scapy.all as sc
 
 
 def get_mac(target_ip):
