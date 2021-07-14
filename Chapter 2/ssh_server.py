@@ -1,8 +1,8 @@
 import os
-import paramiko
 import socket
 import sys
 import threading
+import paramiko
 
 CWS = os.path.dirname(os.path.realpath(__file__))
 HOSTKEY = paramiko.RSAKey(filename=os.path.join(CWS, "test_rsa.key"))
