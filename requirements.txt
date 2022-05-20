@@ -1,5 +1,0 @@
-beautifulsoup4
-requests
-scapy
-paramiko
-github3
